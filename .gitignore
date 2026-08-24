@@ -1,0 +1,17 @@
+# Build output
+/Release/
+/Debug/
+/x64/
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.tlog
+*.log
+*.exe
+*.user
+*.aps
+.vs/
+
+# Optional generated reports
+/artifacts/
