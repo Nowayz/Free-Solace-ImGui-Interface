@@ -128,6 +128,30 @@
     <ClCompile Include="src\assets\avatars.cpp">
       <Filter>Assets</Filter>
     </ClCompile>
+    <ClCompile Include="src\assets\avatars_web.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\assets\images_web.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\gl_texture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\snapshot_web.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\runtime\web_app.cpp">
+      <Filter>Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\controls\morph_slider_web.cpp">
+      <Filter>UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\effects\glass_cursor_web.cpp">
+      <Filter>UI\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\foundation\rounded_panel_web.cpp">
+      <Filter>UI\Foundation</Filter>
+    </ClCompile>
     <ClCompile Include="src\ui\effects\glass_cursor.cpp">
       <Filter>UI\Effects</Filter>
     </ClCompile>
@@ -238,6 +262,9 @@
     <ClInclude Include="src\runtime\desktop_app.h">
       <Filter>Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="src\runtime\web_app.h">
+      <Filter>Runtime</Filter>
+    </ClInclude>
     <ClInclude Include="src\ui\foundation\runtime.h">
       <Filter>UI\Foundation</Filter>
     </ClInclude>
@@ -251,6 +278,9 @@
       <Filter>Platform</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\dx11_helpers.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\gl_texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\auth\validation.h">
