@@ -59,8 +59,7 @@ void draw_icon(ImDrawList* dl, icons::id which, const ImVec2& centre, float box,
         return;
     }
 
-    for_each_blur_tap(blur, col,
-                      [&](const ImVec2& off, ImU32 tap)
+    for_each_blur_tap(blur, col, [&](const ImVec2& off, ImU32 tap)
                       { icons::draw(which, dl, ImVec2(tl.x + off.x, tl.y + off.y), size, tap); });
 }
 
