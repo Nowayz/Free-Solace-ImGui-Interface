@@ -1,0 +1,77 @@
+EMXX ?= em++
+
+BUILD_DIR := build/web-make
+DIST_DIR := build/web/dist
+
+SOURCES := \
+	src/main.cpp \
+	src/application/app.cpp \
+	src/assets/asset_io.cpp \
+	src/assets/avatars_web.cpp \
+	src/assets/images_web.cpp \
+	src/auth/auth_layout.cpp \
+	src/auth/legal.cpp \
+	src/auth/signin_form.cpp \
+	src/auth/signup_form.cpp \
+	src/auth/validation.cpp \
+	src/core/diagnostics.cpp \
+	src/core/environment.cpp \
+	src/generated/fonts/geist_data.cpp \
+	src/graphics/gl_texture.cpp \
+	src/graphics/snapshot_web.cpp \
+	src/runtime/web_app.cpp \
+	src/ui/controls/caret.cpp \
+	src/ui/controls/form_controls.cpp \
+	src/ui/controls/loader.cpp \
+	src/ui/controls/morph_slider_web.cpp \
+	src/ui/controls/scroll.cpp \
+	src/ui/controls/theme_toggle.cpp \
+	src/ui/controls/widgets.cpp \
+	src/ui/effects/glass_cursor_web.cpp \
+	src/ui/foundation/draw.cpp \
+	src/ui/foundation/icons.cpp \
+	src/ui/foundation/primitives.cpp \
+	src/ui/foundation/rounded_panel_web.cpp \
+	src/ui/foundation/runtime.cpp \
+	src/ui/foundation/svg.cpp \
+	src/ui/foundation/theme.cpp \
+	src/ui/foundation/motion/motion.cpp \
+	src/ui/foundation/typography/font_cache.cpp \
+	src/ui/foundation/typography/kerning.cpp \
+	src/ui/screens/page_renderer.cpp \
+	src/ui/screens/search_overlay.cpp \
+	src/ui/screens/shell_layout.cpp \
+	src/ui/screens/shell_menus.cpp \
+	src/ui/screens/shell_screen.cpp \
+	thirdparty/imgui/imgui.cpp \
+	thirdparty/imgui/imgui_draw.cpp \
+	thirdparty/imgui/imgui_tables.cpp \
+	thirdparty/imgui/imgui_widgets.cpp \
+	thirdparty/imgui/backends/imgui_impl_sdl2.cpp \
+	thirdparty/imgui/backends/imgui_impl_opengl3.cpp
+
+OBJECTS := $(SOURCES:%.cpp=$(BUILD_DIR)/%.o)
+ASSETS := $(shell find assets -type f)
+
+CPPFLAGS := -Isrc -Ithirdparty/imgui -Ithirdparty/imgui/backends \
+	-DIMGUI_DEFINE_MATH_OPERATORS -DIMGUI_IMPL_OPENGL_ES3 -DSOLACE_WEBGL2
+CXXFLAGS := -std=c++20 -O3 -sUSE_SDL=2 -Wall -Wextra -Wpedantic
+WEB_FLAGS := -O3 -sUSE_SDL=2 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 \
+	-sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=67108864 -sSTACK_SIZE=5242880 \
+	-sENVIRONMENT=web -sFILESYSTEM=1 -sEXIT_RUNTIME=0 -sASSERTIONS=0 -sMALLOC=emmalloc
+
+.PHONY: all
+all: $(DIST_DIR)/index.html
+
+$(DIST_DIR)/index.html: $(OBJECTS) web/shell.html LICENSE THIRD_PARTY_NOTICES.md $(ASSETS)
+	@mkdir -p $(DIST_DIR)
+	$(EMXX) $(OBJECTS) $(WEB_FLAGS) \
+		--preload-file assets@/assets \
+		--shell-file web/shell.html \
+		-o $@
+	@cp LICENSE $(DIST_DIR)/LICENSE.txt
+	@cp THIRD_PARTY_NOTICES.md $(DIST_DIR)/THIRD_PARTY_NOTICES.md
+
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(EMXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@

@@ -2,7 +2,9 @@
 
 #include "core/environment.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #include <algorithm>
 #include <cwctype>
@@ -21,6 +23,7 @@ std::filesystem::path executable_directory()
         return std::filesystem::current_path(error);
     };
 
+#ifdef _WIN32
     std::vector<wchar_t> value(512);
     for (;;)
     {
@@ -35,6 +38,9 @@ std::filesystem::path executable_directory()
 
         value.resize(value.size() * 2);
     }
+#else
+    return current_directory();
+#endif
 }
 
 bool is_image(const std::filesystem::path& path)

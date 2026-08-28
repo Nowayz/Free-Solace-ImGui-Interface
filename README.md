@@ -1,6 +1,8 @@
 # Solace
 
-An offline Windows interface showcase built with C++20, Dear ImGui, and DirectX 11.
+An offline interface showcase built with C++20 and Dear ImGui. Solace runs either as a
+native Windows application using DirectX 11 or as a browser SPA compiled to WebAssembly and
+rendered with WebGL2.
 The sign-in screens and provider buttons are local demonstrations; Solace makes no network
 requests and does not collect or submit credentials.
 
@@ -36,6 +38,8 @@ swappable placeholder profile.
 ## Features
 
 - Frameless Win32 window
+- Responsive browser shell with a WebGL2-only canvas
+- WebAssembly build powered by Emscripten, SDL2, and OpenGL ES 3
 - Sign-up and sign-in screens
 - Animated sidebar and page transitions
 - Reusable inputs, menus, tabs, switches, and sliders
@@ -52,7 +56,7 @@ licenses, and a SHA-256 checksum file.
 The executable is currently unsigned, so Windows may display an unknown-publisher warning.
 Build from source if you prefer not to run the packaged binary.
 
-## Build
+## Build for Windows
 
 Requirements:
 
@@ -82,12 +86,53 @@ For a debug build:
 
 You can also open `Solace.sln` in Visual Studio.
 
+## Build for the web
+
+Requirements:
+
+- Emscripten 6.0.8 or newer
+- CMake 3.24 or GNU Make
+
+Activate an Emscripten SDK, then run:
+
+```bash
+./scripts/build-web.sh
+```
+
+The static SPA is written to:
+
+```text
+build/web/dist/index.html
+```
+
+Serve that directory over HTTP; browsers do not allow the `.wasm` and `.data` files to load
+reliably from a `file://` URL. For example:
+
+```bash
+python3 -m http.server 8080 --directory build/web/dist
+```
+
+Then open `http://localhost:8080`. The web target requires WebGL2 and intentionally has no
+WebGL1 fallback. The checked-in Pages workflow builds pull requests and publishes `main`.
+
+### Browser architecture
+
+- `src/runtime/web_app.cpp` owns the SDL2, OpenGL ES 3, and Emscripten frame loop.
+- `src/assets/*_web.cpp` uploads the same bundled images as WebGL textures.
+- DirectX-only shader effects use browser-safe ImGui drawing fallbacks.
+- The browser shell provides responsive scaling, loading and error states, fullscreen mode,
+  touch-safe canvas behavior, and persisted light/dark preference.
+- All authentication screens remain local demonstrations. No credentials or form data leave
+  the browser.
+
 ## Controls
 
 - Drag an empty part of the window to move it.
 - Press `Ctrl+B` to collapse the sidebar.
 - Press `F` to open search.
 - Press `Escape` to close the active panel or exit.
+- In the browser, use the corner button to enter fullscreen. `Escape` exits fullscreen through
+  the browser as usual.
 
 ## Notes
 
@@ -101,6 +146,7 @@ src/          application source
 assets/       runtime images
 scripts/      build and verification tools
 thirdparty/   bundled dependencies
+web/          SPA shell
 ```
 
 ## Credits

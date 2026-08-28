@@ -256,8 +256,13 @@ bool theme_toggle(const char* id, const ImRect& rect, float icon_box, float alph
         s.target_dark = !is_dark();
         s.variant = variant;
         s.start = start;
+#ifdef SOLACE_WEBGL2
+        set_dark(s.target_dark);
+        s.stage = phase_idle;
+#else
         s.stage = phase_awaiting;
         snapshot::request();
+#endif
         started = true;
     }
 

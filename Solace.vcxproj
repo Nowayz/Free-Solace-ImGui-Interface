@@ -20,7 +20,13 @@
     <ClCompile Include="src\application\app.cpp" />
     <ClCompile Include="src\assets\asset_io.cpp" />
     <ClCompile Include="src\assets\avatars.cpp" />
+    <ClCompile Include="src\assets\avatars_web.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\assets\images.cpp" />
+    <ClCompile Include="src\assets\images_web.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\auth\auth_layout.cpp" />
     <ClCompile Include="src\auth\legal.cpp" />
     <ClCompile Include="src\auth\signin_form.cpp" />
@@ -32,22 +38,40 @@
       <AdditionalOptions>/utf-8 /Zm2000 /bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="src\graphics\dx11_helpers.cpp" />
+    <ClCompile Include="src\graphics\gl_texture.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\graphics\snapshot.cpp" />
+    <ClCompile Include="src\graphics\snapshot_web.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\platform\d3d11_renderer.cpp" />
     <ClCompile Include="src\platform\win32_window.cpp" />
     <ClCompile Include="src\runtime\desktop_app.cpp" />
+    <ClCompile Include="src\runtime\web_app.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\ui\controls\caret.cpp" />
     <ClCompile Include="src\ui\controls\form_controls.cpp" />
     <ClCompile Include="src\ui\controls\loader.cpp" />
     <ClCompile Include="src\ui\controls\morph_slider.cpp" />
+    <ClCompile Include="src\ui\controls\morph_slider_web.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\ui\controls\scroll.cpp" />
     <ClCompile Include="src\ui\controls\theme_toggle.cpp" />
     <ClCompile Include="src\ui\controls\widgets.cpp" />
     <ClCompile Include="src\ui\effects\glass_cursor.cpp" />
+    <ClCompile Include="src\ui\effects\glass_cursor_web.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\ui\foundation\draw.cpp" />
     <ClCompile Include="src\ui\foundation\icons.cpp" />
     <ClCompile Include="src\ui\foundation\primitives.cpp" />
     <ClCompile Include="src\ui\foundation\rounded_panel.cpp" />
+    <ClCompile Include="src\ui\foundation\rounded_panel_web.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\ui\foundation\runtime.cpp" />
     <ClCompile Include="src\ui\foundation\svg.cpp" />
     <ClCompile Include="src\ui\foundation\theme.cpp" />
@@ -101,10 +125,12 @@
     <ClInclude Include="src\core\product_info.h" />
     <ClInclude Include="src\generated\fonts\geist_data.h" />
     <ClInclude Include="src\graphics\dx11_helpers.h" />
+    <ClInclude Include="src\graphics\gl_texture.h" />
     <ClInclude Include="src\graphics\snapshot.h" />
     <ClInclude Include="src\platform\d3d11_renderer.h" />
     <ClInclude Include="src\platform\win32_window.h" />
     <ClInclude Include="src\runtime\desktop_app.h" />
+    <ClInclude Include="src\runtime\web_app.h" />
     <ClInclude Include="src\ui\controls\caret.h" />
     <ClInclude Include="src\ui\controls\form_controls.h" />
     <ClInclude Include="src\ui\controls\loader.h" />
