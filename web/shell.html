@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0d">
+  <meta name="description" content="Solace — a Dear ImGui interface running in the browser with WebAssembly and WebGL2.">
+  <meta name="color-scheme" content="dark light">
+  <title>Solace WebGL2</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23151515%22/><path d=%22M45 19H27c-6 0-10 3-10 8 0 12 28 4 28 17 0 5-4 8-10 8H17%22 fill=%22none%22 stroke=%22%23f2f2f2%22 stroke-width=%226%22 stroke-linecap=%22round%22/></svg>">
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #0b0b0d;
+      --surface: #151515;
+      --text: #f2f2f2;
+      --muted: #8b8b91;
+      --line: rgba(255, 255, 255, .12);
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --page: #ededed;
+      --surface: #fcfcfc;
+      --text: #0b0b0b;
+      --muted: #67676c;
+      --line: rgba(0, 0, 0, .12);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      min-height: 100dvh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--surface) 72%, transparent), transparent 54%),
+        var(--page);
+      color: var(--text);
+      font-family: Geist, Inter, ui-sans-serif, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .stage {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+               max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+    #canvas {
+      display: block;
+      width: min(1120px, calc(100vw - 24px), calc((100dvh - 24px) * 14 / 9));
+      height: auto;
+      aspect-ratio: 14 / 9;
+      border: 0;
+      border-radius: clamp(8px, 1.4vw, 16px);
+      background: transparent;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .32), 0 0 0 1px var(--line);
+      outline: none;
+      touch-action: none;
+    }
+    #canvas:focus-visible { box-shadow: 0 28px 90px rgba(0, 0, 0, .32), 0 0 0 2px #8f95ff; }
+    .is-ready #canvas { cursor: none; }
+    .status {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--page);
+      transition: opacity 240ms ease, visibility 240ms ease;
+      z-index: 3;
+    }
+    .status[hidden] { opacity: 0; visibility: hidden; pointer-events: none; display: grid; }
+    .status-card { width: min(360px, 100%); text-align: center; }
+    .mark {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      font-size: 18px;
+      font-weight: 650;
+    }
+    .status-title { margin: 0 0 8px; font-size: 15px; font-weight: 600; }
+    .status-copy { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .progress { height: 2px; margin: 20px auto 0; overflow: hidden; border-radius: 999px; background: var(--line); }
+    .progress::after {
+      content: "";
+      display: block;
+      width: 42%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--text);
+      animation: loading 1.15s ease-in-out infinite;
+    }
+    .status.is-error .progress { display: none; }
+    .utility {
+      position: fixed;
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      color: var(--text);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
+      z-index: 2;
+    }
+    .is-ready .utility { opacity: .7; transform: none; }
+    .utility:hover, .utility:focus-visible { opacity: 1; background: var(--surface); outline: none; }
+    @keyframes loading { from { transform: translateX(-120%); } to { transform: translateX(240%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .status, .utility { transition: none; }
+      .progress::after { animation-duration: 2.4s; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="canvas" width="1120" height="720" tabindex="0"
+            aria-label="Interactive Solace interface rendered with WebGL2">
+      This application requires a browser with canvas and WebGL2 support.
+    </canvas>
+  </main>
+  <section class="status" id="status" role="status" aria-live="polite">
+    <div class="status-card">
+      <div class="mark" aria-hidden="true">S</div>
+      <p class="status-title" id="status-title">Starting Solace</p>
+      <p class="status-copy" id="status-copy">Loading the WebAssembly interface and local assets…</p>
+      <div class="progress" aria-hidden="true"></div>
+    </div>
+  </section>
+  <button class="utility" id="fullscreen" type="button" aria-label="Enter fullscreen" title="Fullscreen">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>
+    </svg>
+  </button>
+  <noscript><p>This interface requires JavaScript.</p></noscript>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const status = document.getElementById('status');
+    const statusTitle = document.getElementById('status-title');
+    const statusCopy = document.getElementById('status-copy');
+
+    window.SolaceBoot = {
+      ready() {
+        document.body.classList.add('is-ready');
+        status.hidden = true;
+        canvas.focus({ preventScroll: true });
+      },
+      fail(message) {
+        status.hidden = false;
+        status.classList.add('is-error');
+        status.setAttribute('role', 'alert');
+        statusTitle.textContent = 'Solace could not start';
+        statusCopy.textContent = message || 'WebGL2 initialization failed.';
+      }
+    };
+
+    if (!document.createElement('canvas').getContext('webgl2')) {
+      window.SolaceBoot.fail('This browser or graphics device does not provide WebGL2.');
+    }
+
+    document.getElementById('fullscreen').addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else await document.getElementById('stage').requestFullscreen();
+      } catch (error) {
+        console.warn('[Solace] Fullscreen mode was blocked by the browser.', error);
+      }
+    });
+
+    canvas.addEventListener('contextmenu', event => event.preventDefault());
+
+    var Module = {
+      canvas,
+      print: (...args) => console.log('[Solace]', ...args),
+      printErr: (...args) => console.error('[Solace]', ...args),
+      setStatus(message) {
+        if (message) statusCopy.textContent = message;
+      },
+      onAbort(reason) {
+        window.SolaceBoot.fail(String(reason || 'The WebAssembly runtime stopped unexpectedly.'));
+      }
+    };
+  </script>
+  {{{ SCRIPT }}}
+</body>
+</html>

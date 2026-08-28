@@ -59,7 +59,8 @@ void draw_icon(ImDrawList* dl, icons::id which, const ImVec2& centre, float box,
         return;
     }
 
-    for_each_blur_tap(blur, col, [&](const ImVec2& off, ImU32 tap)
+    for_each_blur_tap(blur, col,
+                      [&](const ImVec2& off, ImU32 tap)
                       { icons::draw(which, dl, ImVec2(tl.x + off.x, tl.y + off.y), size, tap); });
 }
 
@@ -256,8 +257,13 @@ bool theme_toggle(const char* id, const ImRect& rect, float icon_box, float alph
         s.target_dark = !is_dark();
         s.variant = variant;
         s.start = start;
+#ifdef SOLACE_WEBGL2
+        set_dark(s.target_dark);
+        s.stage = phase_idle;
+#else
         s.stage = phase_awaiting;
         snapshot::request();
+#endif
         started = true;
     }
 
